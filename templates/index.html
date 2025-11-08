@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+          rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/icons@1.29.0/dist/index.umd.min.js"></script>
+
+    <title>Document</title>
+    <style>
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        #myCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+            pointer-events: auto;
+        }
+
+        #elemPill_List {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            position: absolute; /* Add this */
+            margin-top: 20px; /* Adjust this value to your preference */
+            margin-left: 20px;
+            gap: 10px;
+            width: calc(100% - 40px);
+        }
+
+
+        #elemItem_Input div {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            gap: 10px;
+            flex: 0 1 auto;
+
+            background-color: #566c86;
+            border-radius: 20px;
+
+            border-color: transparent #94b0c2 #94b0c2 transparent;
+        }
+
+        #elemPill_Input {
+            display: flex;
+            justify-content: flex-end;
+            flex-grow: 1;
+        }
+
+        #elemPill_Input div {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            gap: 10px;
+            flex: 0 1 auto;
+
+            background-color: #566c86;
+            border-radius: 20px;
+
+            border-color: transparent #94b0c2 #94b0c2 transparent;
+        }
+
+        input {
+            background: transparent;
+            font-size: 1.25em;
+            color: #f4f4f4;
+            font-weight: bold;
+            font-family: "Rubik", sans-serif;
+            border: none;
+            border-bottom: 2px solid transparent; /* Default to no border */
+            outline: none; /* Remove default outline */
+            transition: border-bottom 0.3s ease; /* Smooth transition */
+        }
+
+        #elemPill_Input div i {
+            font-size: 1.5em;
+        }
+
+        #elemPill_Input div input:focus {
+            border-bottom: 2px solid white; /* White line appears on focus */
+        }
+
+        #elemPill_Filter {
+            font-size: 1.5em;
+            padding: 10px;
+            padding-left: 25px;
+            padding-right: 25px;
+            background-color: #566c86;
+            width: 60px;
+            border-radius: 20px;
+
+            border-color: transparent #94b0c2 #94b0c2 transparent;
+            border-style: solid;
+            border-width: 0px 3px 3px 0px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            width: auto; /* Set width to auto */
+            flex: 0 1 auto; /* Allow it to shrink if necessary */
+        }
+
+        .elemPill_Elem {
+            font-size: 1.5em;
+            padding: 10px;
+            padding-left: 25px;
+            padding-right: 25px;
+            background-color: #566c86;
+            width: fit-content;
+            border-radius: 20px;
+
+            border-color: transparent #94b0c2 #94b0c2 transparent;
+            border-style: solid;
+            border-width: 0px 3px 3px 0px;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+
+
+        .elemPill_Elem:hover {
+            background-color: #333c57;
+            border-color: transparent transparent transparent transparent;
+            border-style: solid;
+            border-width: 0px 3px 3px 0px;
+
+            transition: background-color 0.5s, color 0.5s;
+            transition: border-color 0.25s, color 0.25s;
+        }
+
+
+        #elemPill_Filter:hover {
+            background-color: #333c57;
+            border-color: transparent transparent transparent transparent;
+            border-style: solid;
+            border-width: 0px 3px 3px 0px;
+
+            transition: background-color 0.5s, color 0.5s;
+            transition: border-color 0.25s, color 0.25s;
+        }
+
+
+        .elemPill_Elem div {
+            font-family: "Rubik", sans-serif;
+        }
+
+        #elemList_Filters {
+            padding: 10px;
+            border-radius: 0px 20px 20px 20px;
+            width: 200px;
+            background-color: #333c57;
+            display: none;
+        }
+
+        #elemList_FGEN_COMBAT {
+            padding: 10px;
+            border-radius: 0px 20px 20px 20px;
+            width: 200px;
+            background-color: #333c57;
+            display: none;
+        }
+
+        #elemList_FGEN_FISHING {
+            padding: 10px;
+            border-radius: 0px 20px 20px 20px;
+            width: 200px;
+            background-color: #333c57;
+            display: none;
+        }
+
+        #elemList_FGEN_PETS {
+            padding: 10px;
+            border-radius: 0px 20px 20px 20px;
+            width: 200px;
+            background-color: #333c57;
+            display: none;
+        }
+
+        #elemList_FGEN_ACCESSORIES {
+            padding: 10px;
+            border-radius: 0px 20px 20px 20px;
+            width: 200px;
+            background-color: #333c57;
+            display: none;
+        }
+
+        /* //TODO POSAR AQUI ELS DOS ALTRES; */
+
+        .elemList_Filters_Category {
+            font-size: 1.6em !important;
+            color: #94b0c2;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .elemList_Filters_Selection {
+            font-size: 1.5em !important;
+            margin-left: 7px;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .elemList_Filters_Selection:hover {
+            margin-left: 10px;
+
+            color: #a7a7a7;
+            transition: color 0.5s, margin-left 0.5s;
+        }
+
+        /*TOAST*/
+        .toast {
+            visibility: hidden; /* Hidden by default */
+            min-width: 250px;
+            margin-left: -125px; /* Center the toast */
+            background-color: #5D275D;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+            opacity: 0; /* Initially invisible */
+            transition: opacity 0.5s, bottom 0.5s; /* Smooth transition */
+        }
+
+        .toast.show {
+            visibility: visible; /* Show the toast */
+            opacity: 1; /* Fully visible */
+            bottom: 50px; /* Move it up */
+            transition: opacity 0.5s, bottom 0.5s;
+        }
+
+        .profile_list {
+            display: none;
+            justify-content: center; /* Centers profile items horizontally */
+            align-items: center; /* Centers profile list vertically */
+            min-height: 100vh; /* Ensures the profile list takes up full screen height */
+        }
+
+        .profile_elements {
+            display: flex;
+            justify-content: center; /* Centers profile items horizontally */
+            align-items: center; /* Centers profile list vertically */
+            gap: 30px;
+            background: #5d275d;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .profile_item {
+            height: 250px;
+            width: 250px;
+            background: #ef7d57;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            color: #5d275d;
+            justify-content: space-between;
+            transition: transform 0.3s ease, background 0.3s ease; /* Smooth transition */
+        }
+
+        .profile_item:hover {
+            transform: scale(1.05); /* Slightly larger */
+            background: #d46b4e; /* Slightly darker background */
+        }
+
+        .profile_item-bottom {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            align-items: center;
+            padding: 5px;
+        }
+
+        .profile_item-bottom-date {
+            font-size: 1.2em;
+            color: #b13e53;
+        }
+
+        .profile_item-image {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+
+        .profile_item-image svg {
+            width: 140px; /* Adjust size */
+            height: 140px; /* Adjust size */
+            color: #5d275d; /* Adjust color */
+        }
+
+
+        .profile_item-bottom-type {
+            font-size: 1.75em;
+        }
+
+        .profile_item-top-name {
+            font-size: 2.1em;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="myCanvas"></canvas>
+
+<div id="elemPill_List">
+
+    <div id="elemPill_Filter" onclick="showSelectBox()"><i class="bi bi-funnel-fill"></i><i
+            class="bi bi-plus-circle-fill"></i>
+    </div>
+    <div id="elemItem_Input">
+        <div>
+            <input type="text" id="elemPill_Item-Label" name="name" size="10"/>
+            <i class="bi bi-search" onclick="searchByUser()"></i>
+        </div>
+    </div>
+    <div id="elemPill_Input">
+        <div>
+            <input type="text" id="elemPill_Input-Label" name="name" size="10"/>
+            <i class="bi bi-search" onclick="searchByUser()"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="44" height="44"
+                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/>
+                <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div id="elemList_Filters">
+    <div class="elemList_Filters_Category">Progression</div>
+    <div class="elemList_Filters_Selection" id='GEN_COMBAT' onclick="addFilter('GEN_COMBAT')">Combat</div>
+    <div class="elemList_Filters_Selection" id='GEN_ACCESSORIES' onclick="addFilter('GEN_ACCESSORIES')">Accessories
+    </div>
+    <div class="elemList_Filters_Selection" id='GEN_FISHING' onclick="addFilter('GEN_FISHING')">Fishing</div>
+    <div class="elemList_Filters_Selection" id='GEN_PETS' onclick="addFilter('GEN_PETS')">Pets</div>
+    <!-- //TODO POSAR AQUI ELS DOS ALTRES; -->
+</div>
+
+<div id="elemList_FGEN_COMBAT">
+    <div class="elemList_Filters_Category">Combat Paths</div>
+    <div class="elemList_Filters_Selection" id='COMBAT_ELEM_SWORD' onclick="switchSubFilter('COMBAT','ELEM_SWORD')">
+        Swords
+    </div>
+    <div class="elemList_Filters_Selection" id='COMBAT_ELEM_RANGE' onclick="switchSubFilter('COMBAT','ELEM_RANGE')">
+        Range
+    </div>
+    <div class="elemList_Filters_Selection" id='COMBAT_ELEM_ARMOR' onclick="switchSubFilter('COMBAT','ELEM_ARMOR')">
+        Armor
+    </div>
+</div>
+
+<div id="elemList_FGEN_FISHING">
+    <div class="elemList_Filters_Category">Fishing Paths</div>
+    <div class="elemList_Filters_Selection" id='FISHING_ELEM_RODS' onclick="switchSubFilter('FISHING','ELEM_RODS')">
+        Rods
+    </div>
+    <div class="elemList_Filters_Selection" id='FISHING_ELEM_ARMOR' onclick="switchSubFilter('FISHING','ELEM_ARMOR')">
+        Armor
+    </div>
+</div>
+
+
+<div id="elemList_FGEN_PETS">
+    <div class="elemList_Filters_Category">Pets Paths</div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_MINING' onclick="switchSubFilter('PETS','ELEM_MINING')">
+        Mining
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_COMBAT' onclick="switchSubFilter('PETS','ELEM_COMBAT')">
+        Combat
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_FARMING' onclick="switchSubFilter('PETS','ELEM_FARMING')">
+        Farming
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_FORAGING' onclick="switchSubFilter('PETS','ELEM_FORAGING')">
+        Foraging
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_FISHING' onclick="switchSubFilter('PETS','ELEM_FISHING')">
+        Fishing
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_ENCHANTING'
+         onclick="switchSubFilter('PETS','ELEM_ENCHANTING')">
+        Enchanting
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_ALCHEMY' onclick="switchSubFilter('PETS','ELEM_ALCHEMY')">
+        Alchemy
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_TAMING' onclick="switchSubFilter('PETS','ELEM_TAMING')">
+        Taming
+    </div>
+    <div class="elemList_Filters_Selection" id='PETS_ELEM_OTHER' onclick="switchSubFilter('PETS','ELEM_OTHER')">
+        Other
+    </div>
+</div>
+
+<div id="elemList_FGEN_ACCESSORIES">
+    <div class="elemList_Filters_Category">Pets Paths</div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_MINING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_MINING')">
+        Mining
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_COMBAT'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_COMBAT')">
+        Combat
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_FARMING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_FARMING')">
+        Farming
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_FORAGING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_FORAGING')">
+        Foraging
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_FISHING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_FISHING')">
+        Fishing
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_ENCHANTING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_ENCHANTING')">
+        Enchanting
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_ALCHEMY'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_ALCHEMY')">
+        Alchemy
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_TAMING'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_TAMING')">
+        Taming
+    </div>
+    <div class="elemList_Filters_Selection" id='ACCESSORIES_ELEM_OTHER'
+         onclick="switchSubFilter('ACCESSORIES','ELEM_OTHER')">
+        Other
+    </div>
+</div>
+
+<div class="profile_list">
+    <div class="profile_elements" id="profile_elements">
+    </div>
+</div>
+
+<div id="toast" class="toast">The User doesn't exists</div>
+<!-- //TODO POSAR AQUI ELS DOS ALTRES; -->
+
+<script src="../static/js/engineSprings/mainEngine.js"></script>
+<script src="../static/js/main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const socket = io();
+        socket.emit('homePageLoaded');
+    });
+</script>
+</body>
+</html>

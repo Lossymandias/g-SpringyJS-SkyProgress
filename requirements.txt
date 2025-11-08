@@ -1,0 +1,14 @@
+# Third-party dependencies for the SkyBlock wiki web app
+# Install with: pip install -r requirements.txt   (or: make install)
+
+# HTTP requests (wiki / API data fetching)
+requests>=2.31
+
+# Web framework (Flask, request, render_template, jsonify)
+Flask>=3.0
+
+# Websocket support (flask_socketio.SocketIO)
+Flask-SocketIO>=5.3
+
+# Lets Flask-SocketIO use real websockets in its default threading mode
+simple-websocket>=1.0
